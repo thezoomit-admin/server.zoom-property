@@ -17,6 +17,13 @@ const monthsAgo = (months: number) => {
   return d;
 };
 
+const daysAgo = (days: number) => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - days);
+  return d;
+};
+
 const listingTrend = async () => {
   const since = monthsAgo(5);
   const rows = await Property.aggregate<{ _id: string; count: number }>([
@@ -38,6 +45,57 @@ const listingTrend = async () => {
     out.push({ month: key, listings: byMonth.get(key) ?? 0 });
   }
   return out;
+};
+
+const enquiriesTrend = async () => {
+  const since = daysAgo(13); // Last 14 days including today
+  
+  const [contacts, quotations] = await Promise.all([
+    ContactMessage.aggregate([
+      { $match: { createdAt: { $gte: since } } },
+      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } }
+    ]),
+    QuotationRequest.aggregate([
+      { $match: { createdAt: { $gte: since } } },
+      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } }
+    ])
+  ]);
+
+  const cMap = new Map(contacts.map(c => [c._id, c.count]));
+  const qMap = new Map(quotations.map(q => [q._id, q.count]));
+
+  const out = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const label = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+    out.push({ label, leads: cMap.get(dateKey) || 0, quotations: qMap.get(dateKey) || 0 });
+  }
+  return out;
+};
+
+const serviceBreakdown = async () => {
+  const quotations = await QuotationRequest.aggregate([
+    { $group: { _id: "$service", value: { $sum: 1 } } },
+    { $sort: { value: -1 } },
+  ]);
+  
+  const out = [];
+  let generalCount = 0;
+  for (const q of quotations) {
+    const name = (q._id || "").trim();
+    if (!name || name.toLowerCase() === "general") {
+      generalCount += q.value;
+    } else {
+      out.push({ name, value: q.value });
+    }
+  }
+  if (generalCount > 0) {
+    out.push({ name: "General", value: generalCount });
+  }
+  return out.sort((a, b) => b.value - a.value).slice(0, 7);
 };
 
 const getCompanyOverview = async (req: Request) => {
@@ -100,11 +158,13 @@ const getCompanyOverview = async (req: Request) => {
 
     canEnquiries
       ? (async () => {
-          const [contact, quotations] = await Promise.all([
+          const [contact, quotations, trend, breakdown] = await Promise.all([
             ContactMessage.countDocuments({}),
             QuotationRequest.countDocuments({}),
+            enquiriesTrend(),
+            serviceBreakdown(),
           ]);
-          return { contact, quotations, total: contact + quotations };
+          return { contact, quotations, total: contact + quotations, trend, breakdown };
         })()
       : null,
 
