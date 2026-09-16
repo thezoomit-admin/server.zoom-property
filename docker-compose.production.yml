@@ -35,10 +35,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=dokploy-network
-      - traefik.http.routers.training-institute-prod-web.rule=Host(`api.yourdomain.com`)
+      - traefik.http.routers.training-institute-prod-web.rule=Host(`api.zoompropertyltd.com`)
       - traefik.http.routers.training-institute-prod-web.entrypoints=web
       - traefik.http.routers.training-institute-prod-web.middlewares=redirect-to-https@file
-      - traefik.http.routers.training-institute-prod-websecure.rule=Host(`api.yourdomain.com`)
+      - traefik.http.routers.training-institute-prod-websecure.rule=Host(`api.zoompropertyltd.com`)
       - traefik.http.routers.training-institute-prod-websecure.entrypoints=websecure
       - traefik.http.routers.training-institute-prod-websecure.tls.certresolver=letsencrypt
       - traefik.http.services.training-institute-prod-websecure.loadbalancer.server.port=6001
