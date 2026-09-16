@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      PORT: 6001
+      PORT: 5008
       SERVER_URL: ${SERVER_URL}
       DB_URL: ${DB_URL}
       CORS_ORIGIN: ${CORS_ORIGIN}
@@ -31,7 +31,7 @@ services:
       FRONTEND_URL: ${FRONTEND_URL}
       REVALIDATE_SECRET: ${REVALIDATE_SECRET}
     ports:
-      - "6001:6001"
+      - "5008:5008"
     labels:
       - traefik.enable=true
       - traefik.docker.network=dokploy-network
@@ -41,7 +41,7 @@ services:
       - traefik.http.routers.training-institute-prod-websecure.rule=Host(`api.zoompropertyltd.com`)
       - traefik.http.routers.training-institute-prod-websecure.entrypoints=websecure
       - traefik.http.routers.training-institute-prod-websecure.tls.certresolver=letsencrypt
-      - traefik.http.services.training-institute-prod-websecure.loadbalancer.server.port=6001
+      - traefik.http.services.training-institute-prod-websecure.loadbalancer.server.port=5008
       - traefik.http.routers.training-institute-prod-websecure.service=training-institute-prod-websecure
     networks:
       - dokploy-network
