@@ -93,6 +93,11 @@ const getAllProjects = async (query: Record<string, unknown>) => {
     delete restQuery.q;
   }
 
+  // Serial number in the panel (`order`) is the list order on the site too.
+  if (!restQuery.sort || restQuery.sort === "order") {
+    restQuery.sort = "order createdAt";
+  }
+
   const projectQuery = new QueryBuilder(
     withRelations(Project.find(baseFilter)),
     restQuery
