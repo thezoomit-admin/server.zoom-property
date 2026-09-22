@@ -50,9 +50,20 @@ const withRelations = <T>(q: T) =>
     .populate({ path: "agent", select: "_id name nameBn role roleBn phone image rating deals respondsIn languages" })
     .populate({ path: "video.poster", select: "_id key" }) as T;
 
+const nextOrder = async () => {
+  const last = await Project.findOne(liveFilter).sort({ order: -1 }).select("order");
+  return last && typeof last.order === "number" ? last.order + 1 : 0;
+};
+
 const createProject = async (payload: Partial<IProject>, createdBy?: string) => {
+  const order =
+    payload.order === undefined || payload.order === null
+      ? await nextOrder()
+      : payload.order;
+
   const project = await Project.create({
     ...payload,
+    order,
     slug: await uniqueSlug(payload.name as string),
     progress: progressFrom(payload.milestones as IMilestone[]),
     createdBy,
@@ -93,7 +104,7 @@ const getAllProjects = async (query: Record<string, unknown>) => {
     delete restQuery.q;
   }
 
-  // Serial number in the panel (`order`) is the list order on the site too.
+  // Serial in the panel (`order`) is the list order on the site too: 0, 1, 2…
   if (!restQuery.sort || restQuery.sort === "order") {
     restQuery.sort = "order createdAt";
   }
