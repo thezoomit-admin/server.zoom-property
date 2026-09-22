@@ -2,6 +2,11 @@ import { StatusCodes } from "http-status-codes";
 import slugify from "slugify";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/appError";
+import {
+  compactSerials,
+  moveSerial,
+  takeSerial,
+} from "../../shared/serial";
 import { diffFields, recordHistory } from "../history/history.service";
 import { Property } from "../property/property.model";
 import { IArea } from "./area.interface";
@@ -25,13 +30,9 @@ const uniqueSlug = async (name: string, excludeId?: string) => {
 };
 
 const createArea = async (payload: Partial<IArea>, createdBy?: string) => {
-  if (payload.order === undefined || payload.order === null || payload.order === 0) {
-    const maxArea = await Area.findOne(liveFilter).sort({ order: -1 }).select("order");
-    payload.order = maxArea && typeof maxArea.order === "number" ? maxArea.order + 1 : 1;
-  }
-
   const area = await Area.create({
     ...payload,
+    order: await takeSerial(Area, payload.order),
     slug: await uniqueSlug(payload.name as string),
     createdBy,
   });
@@ -58,11 +59,13 @@ const getAllAreas = async (query: Record<string, unknown>) => {
   const baseFilter: Record<string, unknown> = { ...liveFilter };
   if (activeOnly === "true") baseFilter.isActive = true;
 
-  const queryParams = { sort: "order", ...restQuery };
+  if (!restQuery.sort || restQuery.sort === "order") {
+    restQuery.sort = "order createdAt";
+  }
 
   const areaQuery = new QueryBuilder(
     Area.find(baseFilter).populate({ path: "image", select: "_id key" }),
-    queryParams
+    restQuery
   )
     .search(["name", "nameBn", "city"])
     .filter()
@@ -112,35 +115,11 @@ const updateArea = async (
   const existing = await Area.findOne({ _id: id, ...liveFilter });
   if (!existing) throw new AppError(StatusCodes.NOT_FOUND, "Area not found");
 
-  if (typeof payload.order === "number" && payload.order !== existing.order) {
-    const oldOrder = existing.order ?? 0;
-    const newOrder = payload.order;
-
-    if (newOrder < oldOrder) {
-      // Shift intermediate items DOWN (+1)
-      await Area.updateMany(
-        {
-          _id: { $ne: id },
-          ...liveFilter,
-          order: { $gte: newOrder, $lt: oldOrder },
-        },
-        { $inc: { order: 1 } }
-      );
-    } else if (newOrder > oldOrder) {
-      // Shift intermediate items UP (-1)
-      await Area.updateMany(
-        {
-          _id: { $ne: id },
-          ...liveFilter,
-          order: { $gt: oldOrder, $lte: newOrder },
-        },
-        { $inc: { order: -1 } }
-      );
-    }
-  }
-
   const changes = diffFields(existing.toObject(), payload);
   const patch: Record<string, unknown> = { ...payload, updatedBy };
+  if (typeof payload.order === "number" && payload.order !== existing.order) {
+    patch.order = await moveSerial(Area, id, existing.order, payload.order);
+  }
   if (payload.name && payload.name !== existing.name) {
     patch.slug = await uniqueSlug(payload.name, id);
   }
@@ -184,6 +163,8 @@ const deleteArea = async (id: string, deletedBy?: string) => {
     { new: true }
   );
   if (!area) throw new AppError(StatusCodes.NOT_FOUND, "Area not found");
+
+  await compactSerials(Area);
 
   await recordHistory({
     entity: "Area",

@@ -2,6 +2,11 @@ import { StatusCodes } from "http-status-codes";
 import slugify from "slugify";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/appError";
+import {
+  compactSerials,
+  moveSerial,
+  takeSerial,
+} from "../../shared/serial";
 import { diffFields, recordHistory } from "../history/history.service";
 import { ProjectLanding } from "../projectLanding/projectLanding.model";
 import { Property } from "../property/property.model";
@@ -50,20 +55,10 @@ const withRelations = <T>(q: T) =>
     .populate({ path: "agent", select: "_id name nameBn role roleBn phone image rating deals respondsIn languages" })
     .populate({ path: "video.poster", select: "_id key" }) as T;
 
-const nextOrder = async () => {
-  const last = await Project.findOne(liveFilter).sort({ order: -1 }).select("order");
-  return last && typeof last.order === "number" ? last.order + 1 : 0;
-};
-
 const createProject = async (payload: Partial<IProject>, createdBy?: string) => {
-  const order =
-    payload.order === undefined || payload.order === null
-      ? await nextOrder()
-      : payload.order;
-
   const project = await Project.create({
     ...payload,
-    order,
+    order: await takeSerial(Project, payload.order),
     slug: await uniqueSlug(payload.name as string),
     progress: progressFrom(payload.milestones as IMilestone[]),
     createdBy,
@@ -104,7 +99,7 @@ const getAllProjects = async (query: Record<string, unknown>) => {
     delete restQuery.q;
   }
 
-  // Serial in the panel (`order`) is the list order on the site too: 0, 1, 2…
+  // Unique 1-based serial in the panel (`order`) is the list order on the site too.
   if (!restQuery.sort || restQuery.sort === "order") {
     restQuery.sort = "order createdAt";
   }
@@ -199,6 +194,9 @@ const updateProject = async (
 
   const changes = diffFields(existing.toObject(), payload);
   const patch: Record<string, unknown> = { ...payload, updatedBy };
+  if (typeof payload.order === "number" && payload.order !== existing.order) {
+    patch.order = await moveSerial(Project, id, existing.order, payload.order);
+  }
   if (payload.name && payload.name !== existing.name) {
     patch.slug = await uniqueSlug(payload.name, id);
   }
@@ -241,6 +239,8 @@ const deleteProject = async (id: string, deletedBy?: string) => {
     { new: true }
   );
   if (!project) throw new AppError(StatusCodes.NOT_FOUND, "Project not found");
+
+  await compactSerials(Project);
 
   await recordHistory({
     entity: "Project",

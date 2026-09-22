@@ -3,6 +3,11 @@ import slugify from "slugify";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/appError";
 import { nextSequence } from "../../shared/counter.model";
+import {
+  compactSerials,
+  moveSerial,
+  takeSerial,
+} from "../../shared/serial";
 import { diffFields, recordHistory } from "../history/history.service";
 import { IProperty } from "./property.interface";
 import { Property, PropertyAmenity, PropertyType } from "./property.model";
@@ -74,6 +79,7 @@ const createProperty = async (
 ) => {
   const property = await Property.create({
     ...payload,
+    order: await takeSerial(Property, payload.order),
     referenceNo: await nextReferenceNo(),
     slug: await uniqueSlug(payload.title as string),
     // A listing created straight into "available" is on the market from the
@@ -108,6 +114,10 @@ const getAllProperties = async (
       ...(min !== undefined ? { $gte: Number(min) } : {}),
       ...(max !== undefined ? { $lte: Number(max) } : {}),
     };
+  }
+
+  if (!restQuery.sort || restQuery.sort === "order") {
+    restQuery.sort = "order createdAt";
   }
 
   const propertyQuery = new QueryBuilder(
@@ -169,6 +179,9 @@ const updateProperty = async (
      this save, and only when the number actually went down. A desk that can
      set the badge by hand is a desk whose "price drop" badges mean nothing. */
   const patch: Record<string, unknown> = { ...payload, updatedBy };
+  if (typeof payload.order === "number" && payload.order !== existing.order) {
+    patch.order = await moveSerial(Property, id, existing.order, payload.order);
+  }
   if (
     typeof payload.price === "number" &&
     payload.price < existing.price
@@ -253,6 +266,8 @@ const deleteProperty = async (id: string, deletedBy?: string) => {
     { new: true }
   );
   if (!property) throw new AppError(StatusCodes.NOT_FOUND, "Listing not found");
+
+  await compactSerials(Property);
 
   await recordHistory({
     entity: "Property",

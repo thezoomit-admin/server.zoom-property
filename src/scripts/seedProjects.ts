@@ -501,7 +501,7 @@ const run = async () => {
       lastInspected: daysAgo(seed.inspectedDaysAgo),
       featured: seed.featured,
       isHome: seed.isHome,
-      order: i,
+      order: i + 1,
       isActive: true,
     } as any);
 
