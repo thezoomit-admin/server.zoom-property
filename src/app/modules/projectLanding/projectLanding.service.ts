@@ -80,7 +80,7 @@ const getPublicByPath = async (path: string) => {
 const getChrome = async () => {
   const rows = await ProjectLanding.find({ isActive: true })
     .select(
-      "path phonePrimary whatsapp navEnquire navEnquireBn hero.title hero.titleBn hero.location hero.locationBn cta.primary cta.primaryBn",
+      "path phonePrimary phoneSecondary whatsapp facebookUrl navEnquire navEnquireBn hero.title hero.titleBn hero.location hero.locationBn cta.primary cta.primaryBn enquire.phoneLabel enquire.phoneLabelBn enquire.whatsappLabel enquire.whatsappLabelBn",
     )
     .lean();
   return rows;
