@@ -40,8 +40,18 @@ const matchers = config.cors_origin
     return (origin: string) => pattern.test(origin);
   });
 
-export const isAllowedOrigin = (origin: string) =>
-  matchers.some((matches) => matches(normalise(origin)));
+export const isAllowedOrigin = (origin: string) => {
+  const value = normalise(origin);
+  // Local admin often moves off 3013 when that port is taken. Dev browsers
+  // on any localhost port should still reach the API.
+  if (
+    config.NODE_ENV !== "production" &&
+    /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(value)
+  ) {
+    return true;
+  }
+  return matchers.some((matches) => matches(value));
+};
 
 export const corsOptions: CorsOptions = {
   origin: allowAnyOrigin

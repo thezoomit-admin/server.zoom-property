@@ -2,7 +2,13 @@ import { StatusCodes } from "http-status-codes";
 import slugify from "slugify";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/appError";
+import {
+  compactSerials,
+  moveSerial,
+  takeSerial,
+} from "../../shared/serial";
 import { diffFields, recordHistory } from "../history/history.service";
+import { ProjectLanding } from "../projectLanding/projectLanding.model";
 import { Property } from "../property/property.model";
 import { IMilestone, IProject } from "./project.interface";
 import { Project } from "./project.model";
@@ -52,6 +58,7 @@ const withRelations = <T>(q: T) =>
 const createProject = async (payload: Partial<IProject>, createdBy?: string) => {
   const project = await Project.create({
     ...payload,
+    order: await takeSerial(Project, payload.order),
     slug: await uniqueSlug(payload.name as string),
     progress: progressFrom(payload.milestones as IMilestone[]),
     createdBy,
@@ -92,6 +99,11 @@ const getAllProjects = async (query: Record<string, unknown>) => {
     delete restQuery.q;
   }
 
+  // Unique 1-based serial in the panel (`order`) is the list order on the site too.
+  if (!restQuery.sort || restQuery.sort === "order") {
+    restQuery.sort = "order createdAt";
+  }
+
   const projectQuery = new QueryBuilder(
     withRelations(Project.find(baseFilter)),
     restQuery
@@ -102,10 +114,34 @@ const getAllProjects = async (query: Record<string, unknown>) => {
     .paginate()
     .fields();
 
-  const [data, meta] = await Promise.all([
+  const [rows, meta] = await Promise.all([
     projectQuery.modelQuery,
     projectQuery.countTotal(),
   ]);
+
+  const ids = (rows as { _id: unknown }[]).map((row) => row._id);
+  const landings = ids.length
+    ? await ProjectLanding.find({ project: { $in: ids } })
+        .select("project path isActive")
+        .lean()
+    : [];
+  const landingByProject = new Map(
+    landings.map((row) => [String(row.project), row]),
+  );
+
+  const data = (rows as { _id: unknown; toObject?: () => object }[]).map(
+    (row) => {
+      const json =
+        typeof row.toObject === "function" ? row.toObject() : row;
+      const landing = landingByProject.get(String(row._id));
+      return {
+        ...json,
+        landing: landing
+          ? { path: landing.path, isActive: landing.isActive !== false }
+          : null,
+      };
+    },
+  );
 
   return { data, meta };
 };
@@ -158,6 +194,9 @@ const updateProject = async (
 
   const changes = diffFields(existing.toObject(), payload);
   const patch: Record<string, unknown> = { ...payload, updatedBy };
+  if (typeof payload.order === "number" && payload.order !== existing.order) {
+    patch.order = await moveSerial(Project, id, existing.order, payload.order);
+  }
   if (payload.name && payload.name !== existing.name) {
     patch.slug = await uniqueSlug(payload.name, id);
   }
@@ -200,6 +239,8 @@ const deleteProject = async (id: string, deletedBy?: string) => {
     { new: true }
   );
   if (!project) throw new AppError(StatusCodes.NOT_FOUND, "Project not found");
+
+  await compactSerials(Project);
 
   await recordHistory({
     entity: "Project",
