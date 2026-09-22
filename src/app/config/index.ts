@@ -23,9 +23,9 @@ const parseOrigins = (raw?: string) => {
 
 export default {
   NODE_ENV: process.env.NODE_ENV,
-  port: process.env.PORT || "5008",
+  port: process.env.PORT || "5009",
   db_url: process.env.DB_URL,
-  server_url: process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5008}`,
+  server_url: process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5009}`,
   // Comma-separated list of allowed origins, e.g. "https://shop.example.com,https://admin.example.com".
   // "*" cannot be combined with credentialed requests (cookies/auth headers) per the CORS spec —
   // browsers reject "Access-Control-Allow-Origin: *" alongside "Access-Control-Allow-Credentials: true".
