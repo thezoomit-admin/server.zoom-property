@@ -13,10 +13,8 @@ const withRelations = <T>(q: T) =>
     .populate({ path: "about.image", select: "_id key" })
     .populate({ path: "residences.images", select: "_id key" })
     .populate({ path: "elevation.views.image", select: "_id key" })
-    .populate({ path: "films.items.poster", select: "_id key" })
     .populate({ path: "gallery.shots.image", select: "_id key" })
-    .populate({ path: "reviews.items.avatar", select: "_id key" })
-    .populate({ path: "reviews.items.poster", select: "_id key" }) as T;
+    .populate({ path: "reviews.items.avatar", select: "_id key" }) as T;
 
 const emptySections = () =>
   Object.fromEntries(LANDING_SECTIONS.map((key) => [key, { visible: true }]));
@@ -122,6 +120,10 @@ const upsert = async (
         { new: true, runValidators: true },
       )
     : await ProjectLanding.create({ ...next, createdBy: userId });
+
+  if (!landing) {
+    throw new Error("Failed to save project landing");
+  }
 
   return withRelations(ProjectLanding.findById(landing._id));
 };

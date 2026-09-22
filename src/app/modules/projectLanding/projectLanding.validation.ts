@@ -55,6 +55,7 @@ const body = z
     reviews: z.any().optional(),
     faq: z.any().optional(),
     enquire: z.any().optional(),
+    custom: z.any().optional(),
   })
   .passthrough();
 

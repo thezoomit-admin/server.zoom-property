@@ -14,6 +14,7 @@ export const LANDING_SECTIONS = [
   "reviews",
   "faq",
   "enquire",
+  "custom",
 ] as const;
 
 export type LandingSectionKey = (typeof LANDING_SECTIONS)[number];
@@ -320,6 +321,15 @@ export interface IProjectLanding extends Document {
       successBody?: string;
       successBodyBn?: string;
     };
+  };
+  /** Bottom rich-text band — free HTML from the admin editor. */
+  custom: {
+    eyebrow?: string;
+    eyebrowBn?: string;
+    title?: string;
+    titleBn?: string;
+    body?: string;
+    bodyBn?: string;
   };
   createdBy?: Types.ObjectId;
   updatedBy?: Types.ObjectId;
