@@ -28,7 +28,6 @@ const projectLandingSchema = new Schema<IProjectLanding>(
       required: true,
       trim: true,
       lowercase: true,
-      index: true,
     },
     isActive: { type: Boolean, default: true, index: true },
     facebookUrl: { type: String, trim: true },
