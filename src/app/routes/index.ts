@@ -2,6 +2,7 @@ import { Router } from "express";
 import { activityNotifier } from "../middleware/activityNotifier";
 import { ActionLogRoutes } from "../modules/actionLog/actionLog.route";
 import { AreaRoutes } from "../modules/area/area.routes";
+import { SubAreaRoutes } from "../modules/subArea/subArea.routes";
 import { BlogRoutes } from "../modules/blog/blog.routes";
 import { BlogCommentRoutes } from "../modules/blogComment/blogComment.routes";
 import { AuthRoutes } from "../modules/auth/auth.routes";
@@ -120,6 +121,10 @@ const moduleRoutes = [
   {
     path: "/areas",
     route: AreaRoutes,
+  },
+  {
+    path: "/sub-areas",
+    route: SubAreaRoutes,
   },
   {
     path: "/blog",

@@ -19,6 +19,7 @@ const projectSchema = new Schema<IProject>(
     developer: { type: String, trim: true },
 
     area: { type: Schema.Types.ObjectId, ref: "Area", required: true, index: true },
+    subArea: { type: Schema.Types.ObjectId, ref: "SubArea", index: true },
     city: { type: String, required: true, trim: true, default: "Dhaka" },
 
     progress: { type: Number, default: 0, min: 0, max: 100 },

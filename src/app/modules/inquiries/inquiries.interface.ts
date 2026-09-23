@@ -7,6 +7,7 @@ export interface IContactMessage {
   type?: string;
   enquiry?: string;
   area?: string;
+  subArea?: string;
   budget?: string;
   source?: string;
   /**

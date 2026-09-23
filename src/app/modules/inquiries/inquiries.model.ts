@@ -12,6 +12,7 @@ const ContactMessageSchema = new Schema<IContactMessage>(
     type: { type: String, default: "General" },
     enquiry: { type: String },
     area: { type: String },
+    subArea: { type: String },
     budget: { type: String },
     source: { type: String },
   },

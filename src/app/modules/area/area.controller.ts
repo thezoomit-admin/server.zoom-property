@@ -56,6 +56,16 @@ const getPublicAreas = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getPublicBySlug = catchAsync(async (req: Request, res: Response) => {
+  const result = await AreaService.getPublicBySlug(req.params.slug);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Area retrieved successfully",
+    data: result,
+  });
+});
+
 const getAreaById = catchAsync(async (req: Request, res: Response) => {
   const result = await AreaService.getAreaById(req.params.id);
   sendResponse(res, {
@@ -94,6 +104,7 @@ export const AreaController = {
   createArea,
   getAllAreas,
   getPublicAreas,
+  getPublicBySlug,
   getAreaById,
   updateArea,
   deleteArea,

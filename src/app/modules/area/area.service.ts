@@ -107,6 +107,24 @@ const getAreaById = async (id: string) => {
   return area;
 };
 
+/** Public website: one neighbourhood by its URL slug. */
+const getPublicBySlug = async (slug: string) => {
+  const area = await Area.findOne({
+    slug: slug.toLowerCase().trim(),
+    ...liveFilter,
+    isActive: true,
+  }).populate({ path: "image", select: "_id key" });
+  if (!area) throw new AppError(StatusCodes.NOT_FOUND, "Area not found");
+
+  const listings = await Property.countDocuments({
+    area: area._id,
+    status: "available",
+    isDeleted: { $ne: true },
+  });
+
+  return { ...area.toObject(), listings };
+};
+
 const updateArea = async (
   id: string,
   payload: Partial<IArea>,
@@ -180,6 +198,7 @@ export const AreaService = {
   createArea,
   getAllAreas,
   getAreaById,
+  getPublicBySlug,
   updateArea,
   deleteArea,
 };
