@@ -64,4 +64,14 @@ export default {
   r2_public_url: process.env.R2_PUBLIC_URL,
   frontend_url: process.env.FRONTEND_URL,
   revalidate_secret: process.env.REVALIDATE_SECRET,
+  /**
+   * Zoom Bond CRM base URL — landing/contact leads are POSTed to
+   * `{url}/api/public/leads`. Dev: http://localhost:5002
+   * Prod: https://serverzoombond.zoomx.digital
+   */
+  zoom_bond_crm_url:
+    process.env.ZOOM_BOND_CRM_URL ||
+    (process.env.NODE_ENV === "production"
+      ? "https://serverzoombond.zoomx.digital"
+      : "http://localhost:5002"),
 };

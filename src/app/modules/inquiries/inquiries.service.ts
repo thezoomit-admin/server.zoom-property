@@ -2,6 +2,7 @@ import config from "../../config";
 import { paginationHelper } from "../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../interface/pagination";
 import { EmailHelper } from "../../utils/emailHelper";
+import { forwardLeadToZoomBond } from "../../utils/forwardLeadToZoomBond";
 import {
   NotificationPriority,
   NotificationType,
@@ -86,6 +87,16 @@ const createContactMessage = async (
         // Don't throw error, just log it so the main operation succeeds
       }
     }
+
+    // Forward to Zoom Bond CRM (Website lead / draft). Never block the form.
+    // Bond body: { fullName, phone, email?, project?, note? }
+    void forwardLeadToZoomBond({
+      name: payload.name,
+      phone: payload.phone,
+      email: payload.email,
+      project: payload.source || payload.budget || payload.subject || null,
+      note: payload.message,
+    });
 
     return result;
   } catch (err) {
