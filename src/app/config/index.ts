@@ -65,8 +65,8 @@ export default {
   frontend_url: process.env.FRONTEND_URL,
   revalidate_secret: process.env.REVALIDATE_SECRET,
   /**
-   * Zoom Bond CRM base URL — landing/contact leads are POSTed to
-   * `{url}/api/public/leads`. Dev: http://localhost:5002
+   * Zoom Bond CRM base URL — home / landing / site-CTA leads POST to
+   * `{url}/api/public/leads` (contact-page inquiries do not). Dev: http://localhost:5002
    * Prod: https://serverzoombond.zoomx.digital
    */
   zoom_bond_crm_url:

@@ -11,14 +11,15 @@ export type ZoomBondLeadPayload = {
 };
 
 /**
- * Forward a Zoom Property enquiry to Zoom Bond CRM public intake.
+ * Forward a Zoom Property **lead form** submission to Bond CRM.
  * POST {ZOOM_BOND_CRM_URL}/api/public/leads
  *
- * Body (exact):
- * { fullName, phone, email?, project?, note? }
+ * Only called when contact payload has `createLead: true`
+ * (home hero, landing enquire, site CTA) — not for contact-page inquiries.
  *
- * Fire-and-forget — never throws into the caller. Bond downtime must not
- * block the property site form.
+ * Body (exact): { fullName, phone, email?, project?, note? }
+ *
+ * Fire-and-forget — never throws into the caller.
  */
 export async function forwardLeadToZoomBond(
   lead: ZoomBondLeadPayload,

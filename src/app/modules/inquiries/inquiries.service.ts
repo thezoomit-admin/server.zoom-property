@@ -88,15 +88,17 @@ const createContactMessage = async (
       }
     }
 
-    // Forward to Zoom Bond CRM (Website lead / draft). Never block the form.
-    // Bond body: { fullName, phone, email?, project?, note? }
-    void forwardLeadToZoomBond({
-      name: payload.name,
-      phone: payload.phone,
-      email: payload.email,
-      project: payload.source || payload.budget || payload.subject || null,
-      note: payload.message,
-    });
+    // Bond CRM lead — only home / landing / site-CTA forms set createLead.
+    // Contact-page & other inquiries stay as inquiries only (no CRM lead).
+    if (payload.createLead) {
+      void forwardLeadToZoomBond({
+        name: payload.name,
+        phone: payload.phone,
+        email: payload.email,
+        project: payload.budget || payload.source || payload.subject || null,
+        note: payload.message,
+      });
+    }
 
     return result;
   } catch (err) {

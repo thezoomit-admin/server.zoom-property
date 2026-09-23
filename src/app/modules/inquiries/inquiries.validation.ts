@@ -14,6 +14,8 @@ export const createContactMessage = z.object({
     area: z.string().optional(),
     budget: z.string().optional(),
     source: z.string().optional(),
+    /** Home / landing / CTA lead forms only — contact page inquiries omit this. */
+    createLead: z.boolean().optional(),
   }),
 });
 

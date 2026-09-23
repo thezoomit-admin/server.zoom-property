@@ -9,6 +9,11 @@ export interface IContactMessage {
   area?: string;
   budget?: string;
   source?: string;
+  /**
+   * When true, also forward to Zoom Bond as a CRM lead.
+   * Only home / landing / site-CTA lead forms set this — contact inquiries do not.
+   */
+  createLead?: boolean;
 }
 
 export interface IQuotationRequest {
