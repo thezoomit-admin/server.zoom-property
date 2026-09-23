@@ -232,7 +232,9 @@ const patchSection = async (
     throw new Error("Failed to save landing section");
   }
 
-  return withRelations(ProjectLanding.findById(landing._id));
+  // Skip full media populate — admin does not need the hydrated tree back;
+  // returning lean keeps section PATCH fast.
+  return ProjectLanding.findById(landing._id).lean();
 };
 
 export const ProjectLandingService = {
