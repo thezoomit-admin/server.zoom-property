@@ -15,6 +15,22 @@ import { ContactMessage, QuotationRequest } from "./inquiries.model";
 const truncate = (text: string, max = 140) =>
   text.length > max ? `${text.slice(0, max).trim()}…` : text;
 
+/** Inquiry sources that must never create a Bond CRM lead. */
+const INQUIRY_ONLY_SOURCES = new Set([
+  "contact-page",
+  "contact page",
+]);
+
+function shouldForwardAsCrmLead(payload: IContactMessage): boolean {
+  if (!payload.createLead) return false;
+  const source = String(payload.source || "")
+    .trim()
+    .toLowerCase();
+  if (INQUIRY_ONLY_SOURCES.has(source)) return false;
+  if (source.startsWith("blog article")) return false;
+  return true;
+}
+
 // Contact Message Service
 
 // Create
@@ -89,8 +105,8 @@ const createContactMessage = async (
     }
 
     // Bond CRM lead — only home / landing / site-CTA forms set createLead.
-    // Contact-page & other inquiries stay as inquiries only (no CRM lead).
-    if (payload.createLead) {
+    // Contact-page & blog inquiries never create a CRM lead (even if spoofed).
+    if (shouldForwardAsCrmLead(payload)) {
       void forwardLeadToZoomBond({
         name: payload.name,
         phone: payload.phone,
