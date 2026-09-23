@@ -19,6 +19,14 @@ export const LANDING_SECTIONS = [
 
 export type LandingSectionKey = (typeof LANDING_SECTIONS)[number];
 
+/** Admin tabs that can be PATCH'd independently (content + publishing meta). */
+export const LANDING_PATCH_SECTIONS = [
+  "publishing",
+  ...LANDING_SECTIONS,
+] as const;
+
+export type LandingPatchSection = (typeof LANDING_PATCH_SECTIONS)[number];
+
 export interface ILandingSectionFlag {
   visible: boolean;
 }

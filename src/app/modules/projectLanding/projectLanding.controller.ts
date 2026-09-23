@@ -51,9 +51,25 @@ const upsert = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const patchSection = catchAsync(async (req: Request, res: Response) => {
+  const result = await ProjectLandingService.patchSection(
+    req.params.id,
+    req.params.section,
+    req.body,
+    userId(req),
+  );
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Landing section saved successfully",
+    data: result,
+  });
+});
+
 export const ProjectLandingController = {
   getByProject,
   getPublicByPath,
   getChrome,
   upsert,
+  patchSection,
 };
