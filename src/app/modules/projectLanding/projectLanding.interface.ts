@@ -45,6 +45,11 @@ export interface ILandingPoint {
   body?: string;
   bodyBn?: string;
   icon?: string;
+  /** Google Maps place / directions URL for this amenity. */
+  mapUrl?: string;
+  /** Distance from the project (e.g. "800 m", "1.2 km"). */
+  distance?: string;
+  distanceBn?: string;
 }
 
 export interface ILandingHighlight {
@@ -129,6 +134,8 @@ export interface IProjectLanding extends Document {
   sections: Record<LandingSectionKey, ILandingSectionFlag>;
   hero: {
     image?: Types.ObjectId;
+    /** Slideshow backgrounds (home-hero style). Falls back to `image` when empty. */
+    images?: Types.ObjectId[];
     badge?: string;
     badgeBn?: string;
     handover?: string;
