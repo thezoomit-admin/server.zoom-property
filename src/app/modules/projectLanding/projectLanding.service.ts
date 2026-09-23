@@ -20,6 +20,7 @@ const withRelations = <T>(q: T) =>
   (q as any)
     .populate({ path: "project", select: "_id name nameBn slug" })
     .populate({ path: "hero.image", select: "_id key" })
+    .populate({ path: "hero.images", select: "_id key" })
     .populate({ path: "about.image", select: "_id key" })
     .populate({ path: "residences.images", select: "_id key" })
     .populate({ path: "elevation.views.image", select: "_id key" })

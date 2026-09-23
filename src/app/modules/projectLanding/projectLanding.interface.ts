@@ -134,6 +134,8 @@ export interface IProjectLanding extends Document {
   sections: Record<LandingSectionKey, ILandingSectionFlag>;
   hero: {
     image?: Types.ObjectId;
+    /** Slideshow backgrounds (home-hero style). Falls back to `image` when empty. */
+    images?: Types.ObjectId[];
     badge?: string;
     badgeBn?: string;
     handover?: string;

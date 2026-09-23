@@ -43,6 +43,7 @@ const projectLandingSchema = new Schema<IProjectLanding>(
     sections: { type: sectionsShape, default: () => ({}) },
     hero: {
       image: mediaRef,
+      images: { type: [mediaRef], default: [] },
       badge: String,
       badgeBn: String,
       handover: String,
