@@ -3,8 +3,18 @@ import { StatusCodes } from "http-status-codes";
 
 import AppError from "../../errors/appError";
 import { Project } from "../project/project.model";
-import { LANDING_SECTIONS } from "./projectLanding.interface";
+import {
+  LANDING_PATCH_SECTIONS,
+  LANDING_SECTIONS,
+  type LandingPatchSection,
+  type LandingSectionKey,
+} from "./projectLanding.interface";
 import { ProjectLanding } from "./projectLanding.model";
+
+export type { LandingPatchSection };
+
+const isLandingPatchSection = (value: string): value is LandingPatchSection =>
+  (LANDING_PATCH_SECTIONS as readonly string[]).includes(value);
 
 const withRelations = <T>(q: T) =>
   (q as any)
@@ -49,6 +59,21 @@ const stripEmptyIds = (value: unknown): unknown => {
   return value;
 };
 
+const PUBLISHING_KEYS = [
+  "path",
+  "isActive",
+  "facebookUrl",
+  "phonePrimary",
+  "phoneSecondary",
+  "whatsapp",
+  "metaTitle",
+  "metaTitleBn",
+  "metaDescription",
+  "metaDescriptionBn",
+  "navEnquire",
+  "navEnquireBn",
+] as const;
+
 const getByProject = async (projectId: string) => {
   const project = await Project.findOne({
     _id: projectId,
@@ -82,6 +107,30 @@ const getChrome = async () => {
     )
     .lean();
   return rows;
+};
+
+const ensureLanding = async (projectId: string, userId?: string) => {
+  const project = await Project.findOne({
+    _id: projectId,
+    isDeleted: { $ne: true },
+  }).select("_id name slug");
+  if (!project) {
+    throw new AppError(StatusCodes.NOT_FOUND, "Project not found");
+  }
+
+  let existing = await ProjectLanding.findOne({ project: projectId });
+  if (!existing) {
+    const path = await uniquePath(String(project.slug || "project"));
+    existing = await ProjectLanding.create({
+      project: projectId,
+      path,
+      sections: emptySections(),
+      createdBy: userId,
+      updatedBy: userId,
+    });
+  }
+
+  return { project, existing };
 };
 
 const upsert = async (
@@ -128,9 +177,68 @@ const upsert = async (
   return withRelations(ProjectLanding.findById(landing._id));
 };
 
+/**
+ * Update one landing tab only — smaller writes than full upsert.
+ * `publishing` patches top-level meta; content keys patch that nested object
+ * (+ optional `visible` for sections.<key>).
+ */
+const patchSection = async (
+  projectId: string,
+  sectionKey: string,
+  payload: Record<string, unknown>,
+  userId?: string,
+) => {
+  if (!isLandingPatchSection(sectionKey)) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      `Unknown landing section "${sectionKey}"`,
+    );
+  }
+
+  const { existing } = await ensureLanding(projectId, userId);
+  const cleaned = stripEmptyIds(payload) as Record<string, unknown>;
+  const $set: Record<string, unknown> = { updatedBy: userId };
+
+  if (sectionKey === "publishing") {
+    for (const key of PUBLISHING_KEYS) {
+      if (key === "path") continue;
+      if (key in cleaned) $set[key] = cleaned[key];
+    }
+    const requestedPath =
+      typeof cleaned.path === "string" && cleaned.path.trim()
+        ? cleaned.path
+        : existing.path;
+    $set.path = await uniquePath(
+      String(requestedPath),
+      existing._id?.toString(),
+    );
+  } else {
+    const contentKey = sectionKey as LandingSectionKey;
+    // Body is the section object itself; `visible` is optional show/hide flag.
+    const { visible, ...sectionBody } = cleaned;
+    $set[contentKey] = sectionBody;
+    if (typeof visible === "boolean") {
+      $set[`sections.${contentKey}`] = { visible };
+    }
+  }
+
+  const landing = await ProjectLanding.findByIdAndUpdate(
+    existing._id,
+    { $set },
+    { new: true, runValidators: true },
+  );
+
+  if (!landing) {
+    throw new Error("Failed to save landing section");
+  }
+
+  return withRelations(ProjectLanding.findById(landing._id));
+};
+
 export const ProjectLandingService = {
   getByProject,
   getPublicByPath,
   getChrome,
   upsert,
+  patchSection,
 };

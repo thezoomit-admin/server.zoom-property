@@ -25,6 +25,13 @@ router.get("/public/:slug", ProjectController.getProjectBySlug);
 
 router.get("/", auth(), ProjectController.getAllProjects);
 router.get("/:id/landing", auth(), ProjectLandingController.getByProject);
+router.patch(
+  "/:id/landing/:section",
+  auth(),
+  checkPermission("Projects", "update"),
+  validateRequest(projectLandingValidation.patchSection),
+  ProjectLandingController.patchSection
+);
 router.put(
   "/:id/landing",
   auth(),

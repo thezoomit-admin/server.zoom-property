@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { optionalUrl } from "../../utils/optionalUrl";
-import { LANDING_SECTIONS } from "./projectLanding.interface";
+import { LANDING_PATCH_SECTIONS, LANDING_SECTIONS } from "./projectLanding.interface";
 
 const objectId = z
   .string()
@@ -59,8 +59,48 @@ const body = z
   })
   .passthrough();
 
+/** Publishing tab — path required; other meta optional. */
+const publishingBody = z
+  .object({
+    path: z
+      .string()
+      .min(1, "Landing path is required")
+      .regex(
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+        "Use a lowercase slug, for example zoom-al-zahra",
+      ),
+    isActive: z.boolean().optional(),
+    facebookUrl: optionalUrl,
+    phonePrimary: str,
+    phoneSecondary: str,
+    whatsapp: str,
+    metaTitle: str,
+    metaTitleBn: str,
+    metaDescription: str,
+    metaDescriptionBn: str,
+    navEnquire: str,
+    navEnquireBn: str,
+  })
+  .passthrough();
+
+/** Content section body = section fields + optional visible flag. */
+const sectionBody = z
+  .object({
+    visible: z.boolean().optional(),
+  })
+  .passthrough();
+
+const sectionParam = z.enum(
+  LANDING_PATCH_SECTIONS as unknown as [string, ...string[]],
+);
+
 export const projectLandingValidation = {
   upsert: z.object({ body }),
+  /** Body shape: publishing fields OR content section (+ optional visible). */
+  patchSection: z.object({
+    body: z.union([publishingBody, sectionBody]),
+  }),
 };
 
 void objectId;
+void sectionParam;
