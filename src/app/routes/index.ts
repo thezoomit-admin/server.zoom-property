@@ -25,6 +25,7 @@ import { ReportRoutes } from "../modules/report/report.routes";
 import { RoleRoutes } from "../modules/role/role.routes";
 import { RolePermissionRoutes } from "../modules/rolePermission/rolePermission.routes";
 import { ServicesCountryRoutes } from "../modules/servicesCountry/servicesCountry.routes";
+import { BudgetRangeRoutes } from "../modules/budgetRange/budgetRange.routes";
 import { SitemapRoutes } from "../modules/sitemap/sitemap.route";
 import { UserRoutes } from "../modules/user/user.routes";
 import { DynamicContentRoutes } from "../modules/dynamicContent/dynamicContent.route";
@@ -50,6 +51,10 @@ const moduleRoutes = [
   {
     path: "/services-countries",
     route: ServicesCountryRoutes,
+  },
+  {
+    path: "/budget-ranges",
+    route: BudgetRangeRoutes,
   },
   {
     path: "/media-library",

@@ -18,6 +18,7 @@ router.post(
 
 router.post(
   "/quotation",
+  contactRateLimit,
   validateRequest(inquiriesValidation.createQuotationRequest),
   inquiriesController.createQuotationRequest
 );

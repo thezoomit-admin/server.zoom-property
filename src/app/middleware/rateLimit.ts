@@ -33,11 +33,12 @@ export const authRateLimit = rateLimit({
 // Stricter guard for contact forms, inquiries, and comments to prevent spam.
 export const contactRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  limit: 5, // Allow 5 submissions per hour per IP
+  limit: 5, // 5 lead submissions per hour per IP
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
-    message: "You have submitted too many requests. Please wait an hour before trying again.",
+    message:
+      "Too many enquiries from this address. Please wait about an hour before trying again.",
   },
 });
