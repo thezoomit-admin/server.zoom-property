@@ -107,11 +107,17 @@ const createContactMessage = async (
     // Bond CRM lead — only home / landing / site-CTA forms set createLead.
     // Contact-page & blog inquiries never create a CRM lead (even if spoofed).
     if (shouldForwardAsCrmLead(payload)) {
+      const place = [payload.area, payload.subArea].filter(Boolean).join(" / ");
       void forwardLeadToZoomBond({
         name: payload.name,
         phone: payload.phone,
         email: payload.email,
-        project: payload.budget || payload.source || payload.subject || null,
+        project:
+          place ||
+          payload.budget ||
+          payload.source ||
+          payload.subject ||
+          null,
         note: payload.message,
       });
     }

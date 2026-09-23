@@ -50,6 +50,7 @@ const progressFrom = (milestones: IMilestone[] = []) =>
 const withRelations = <T>(q: T) =>
   (q as any)
     .populate({ path: "area", select: "_id name nameBn city" })
+    .populate({ path: "subArea", select: "_id name nameBn slug" })
     .populate({ path: "coverImage", select: "_id key" })
     .populate({ path: "images", select: "_id key" })
     .populate({ path: "agent", select: "_id name nameBn role roleBn phone image rating deals respondsIn languages" })

@@ -35,15 +35,41 @@ const getAllProjects = catchAsync(async (req: Request, res: Response) => {
  * front of it, and a development switched off in the panel is off everywhere.
  */
 const getPublicProjects = catchAsync(async (req: Request, res: Response) => {
+  const narrowed = publicQuery(req.query as Record<string, unknown>, [
+    "isHome",
+    "isFooter",
+    "featured",
+    "area",
+    "subArea",
+    "stage",
+    "city",
+  ]);
+
+  // Allow area / subArea to be sent as slug from the website.
+  if (narrowed.area) {
+    const { SubAreaService } = await import("../subArea/subArea.service");
+    narrowed.area = await SubAreaService.resolveAreaFilter(narrowed.area);
+  }
+  if (narrowed.subArea && typeof narrowed.subArea === "string") {
+    const { Types } = await import("mongoose");
+    if (
+      !(
+        Types.ObjectId.isValid(narrowed.subArea) &&
+        narrowed.subArea.length === 24
+      )
+    ) {
+      const { SubArea } = await import("../subArea/subArea.model");
+      const row = await SubArea.findOne({
+        slug: String(narrowed.subArea).toLowerCase().trim(),
+        isDeleted: { $ne: true },
+        isActive: true,
+      }).select("_id");
+      if (row) narrowed.subArea = String(row._id);
+    }
+  }
+
   const { data, meta } = await ProjectService.getAllProjects({
-    ...publicQuery(req.query as Record<string, unknown>, [
-      "isHome",
-      "isFooter",
-      "featured",
-      "area",
-      "stage",
-      "city",
-    ]),
+    ...narrowed,
     activeOnly: "true",
   });
   sendResponse(res, {

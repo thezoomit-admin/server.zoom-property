@@ -18,6 +18,7 @@ router.use(revalidates("areas"));
    The website's read. Mounted before "/:id" so "public" is never taken
    for an id. */
 router.get("/public", AreaController.getPublicAreas);
+router.get("/public/:slug", AreaController.getPublicBySlug);
 
 router.get("/", auth(), AreaController.getAllAreas);
 router.get("/:id", auth(), AreaController.getAreaById);

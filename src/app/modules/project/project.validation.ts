@@ -19,6 +19,7 @@ const projectFields = {
   developer: z.string().optional(),
 
   area: objectId,
+  subArea: objectId.optional().nullable(),
   city: z.string().optional(),
 
   // `progress` is absent on purpose: it is the sum of the ticked milestones,

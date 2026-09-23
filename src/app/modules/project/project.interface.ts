@@ -43,6 +43,8 @@ export interface IProject extends Document {
   developer?: string;
 
   area: Types.ObjectId;
+  /** Optional pocket inside the area — gates the public lead → projects flow. */
+  subArea?: Types.ObjectId;
   city: string;
 
   /** Completion, 0–100. Derived from `milestones` on every save. */

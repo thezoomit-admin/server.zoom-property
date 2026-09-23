@@ -12,6 +12,7 @@ export const createContactMessage = z.object({
     type: z.string().optional(),
     enquiry: z.string().optional(),
     area: z.string().optional(),
+    subArea: z.string().optional(),
     budget: z.string().optional(),
     source: z.string().optional(),
     /** Home / landing / CTA lead forms only — contact page inquiries omit this. */
