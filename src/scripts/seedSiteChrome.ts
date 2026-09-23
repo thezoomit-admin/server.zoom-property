@@ -33,6 +33,7 @@ const NAV_LISTS = [
       { en: "Areas", bn: "এলাকা", href: "/areas" },
       { en: "Landowners", bn: "জমির মালিক", href: "/landowners" },
       { en: "Blog", bn: "ব্লগ", href: "/blog" },
+      { en: "About", bn: "আমাদের সম্পর্কে", href: "/about" },
       { en: "Contact", bn: "যোগাযোগ", href: "/contact" },
     ],
   },
