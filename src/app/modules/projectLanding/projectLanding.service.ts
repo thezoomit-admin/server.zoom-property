@@ -1,5 +1,6 @@
 import slugify from "slugify";
 import { StatusCodes } from "http-status-codes";
+import { Types } from "mongoose";
 
 import AppError from "../../errors/appError";
 import { r2PublicUrl } from "../../utils/r2";
@@ -30,26 +31,76 @@ const withRelations = <T>(q: T) =>
     .populate({ path: "reviews.items.avatar", select: "_id key" })
     .populate({ path: "reviews.items.poster", select: "_id key" }) as T;
 
-/** Attach Media.url when populate only returned `_id` + `key`. */
+/** Hex string from ObjectId, populated media, or mangled `{ buffer }` blobs. */
+const toIdString = (value: unknown): string | undefined => {
+  if (value == null || value === "") return undefined;
+  if (typeof value === "string") {
+    const s = value.trim();
+    return Types.ObjectId.isValid(s) ? s : undefined;
+  }
+  if (value instanceof Types.ObjectId) return value.toHexString();
+  if (typeof (value as { toHexString?: () => string }).toHexString === "function") {
+    try {
+      return (value as { toHexString: () => string }).toHexString();
+    } catch {
+      /* fall through */
+    }
+  }
+  if (Buffer.isBuffer(value) && value.length === 12) {
+    return value.toString("hex");
+  }
+  if (typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    if (obj._id != null && obj._id !== value) return toIdString(obj._id);
+    if (obj.id != null && obj.id !== value) return toIdString(obj.id);
+    if (obj.buffer != null) {
+      const buf = obj.buffer as Record<string, number> | Uint8Array | Buffer;
+      if (Buffer.isBuffer(buf) || buf instanceof Uint8Array) {
+        if (buf.length === 12) return Buffer.from(buf).toString("hex");
+      } else if (typeof buf === "object") {
+        const keys = Object.keys(buf).sort((a, b) => Number(a) - Number(b));
+        if (keys.length === 12) {
+          return Buffer.from(keys.map((k) => Number(buf[k as keyof typeof buf]))).toString(
+            "hex",
+          );
+        }
+      }
+    }
+  }
+  return undefined;
+};
+
+/**
+ * Attach Media.url for the public site.
+ * Never object-spread ObjectIds — `{...objectId}` becomes `{ buffer }` and
+ * breaks admin saves that round-trip the `_id`.
+ */
 const ensureMediaUrls = (node: unknown): unknown => {
   if (Array.isArray(node)) return node.map(ensureMediaUrls);
   if (!node || typeof node !== "object") return node;
-  const obj = node as Record<string, unknown>;
-  if (
-    typeof obj.key === "string" &&
-    obj.key.trim() &&
-    !(typeof obj.url === "string" && obj.url.trim())
-  ) {
-    const next: Record<string, unknown> = {
-      ...obj,
-      url: r2PublicUrl(obj.key),
-    };
-    for (const [k, v] of Object.entries(next)) {
-      if (k === "key" || k === "url") continue;
-      next[k] = ensureMediaUrls(v);
-    }
-    return next;
+  if (node instanceof Types.ObjectId) return node.toHexString();
+  if (Buffer.isBuffer(node)) {
+    return node.length === 12 ? node.toString("hex") : node;
   }
+
+  const obj = node as Record<string, unknown>;
+
+  // Mangled ObjectId left over from a prior spread — emit hex only.
+  if ("buffer" in obj && !("key" in obj)) {
+    return toIdString(obj) ?? node;
+  }
+
+  if (typeof obj.key === "string" && obj.key.trim()) {
+    return {
+      _id: toIdString(obj._id) ?? toIdString(obj.id),
+      key: obj.key,
+      url:
+        typeof obj.url === "string" && obj.url.trim()
+          ? obj.url.trim()
+          : r2PublicUrl(obj.key),
+    };
+  }
+
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(obj)) {
     out[k] = ensureMediaUrls(v);
@@ -80,11 +131,25 @@ const uniquePath = async (raw: string, excludeId?: string) => {
   }
 };
 
+/**
+ * Drop empty ids and coerce media refs to hex strings.
+ * Admin may send a populated `{ _id, key, url }` or a mangled `{ buffer }`.
+ */
 const stripEmptyIds = (value: unknown): unknown => {
   if (Array.isArray(value)) return value.map(stripEmptyIds);
+  if (value instanceof Types.ObjectId) return value.toHexString();
   if (value && typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+
+    if ("buffer" in obj && !("key" in obj) && !("title" in obj)) {
+      return toIdString(obj);
+    }
+    if (typeof obj.key === "string" && ("_id" in obj || "id" in obj)) {
+      return toIdString(obj._id ?? obj.id);
+    }
+
     const out: Record<string, unknown> = {};
-    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+    for (const [key, entry] of Object.entries(obj)) {
       if (entry === "" || entry === null) {
         out[key] = undefined;
       } else {
