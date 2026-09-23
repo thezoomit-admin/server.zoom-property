@@ -29,7 +29,6 @@ const NAV_LISTS = [
     prefix: "nav.menu",
     group: GROUP_HEADER_FOOTER,
     rows: [
-      { en: "Properties", bn: "প্রপার্টি", href: "/properties" },
       { en: "Projects", bn: "প্রজেক্ট", href: "/projects" },
       { en: "Areas", bn: "এলাকা", href: "/areas" },
       { en: "Landowners", bn: "জমির মালিক", href: "/landowners" },
@@ -41,7 +40,6 @@ const NAV_LISTS = [
     prefix: "footer.exploreLinks",
     group: GROUP_HEADER_FOOTER,
     rows: [
-      { en: "Properties", bn: "প্রপার্টি", href: "/properties" },
       { en: "Projects", bn: "প্রজেক্ট", href: "/projects" },
       { en: "Areas", bn: "এলাকা", href: "/areas" },
       { en: "Advisors", bn: "পরামর্শদাতা", href: "/agents" },
