@@ -2,6 +2,7 @@ import slugify from "slugify";
 import { StatusCodes } from "http-status-codes";
 
 import AppError from "../../errors/appError";
+import { r2PublicUrl } from "../../utils/r2";
 import { Project } from "../project/project.model";
 import {
   LANDING_PATCH_SECTIONS,
@@ -25,7 +26,42 @@ const withRelations = <T>(q: T) =>
     .populate({ path: "residences.images", select: "_id key" })
     .populate({ path: "elevation.views.image", select: "_id key" })
     .populate({ path: "gallery.shots.image", select: "_id key" })
-    .populate({ path: "reviews.items.avatar", select: "_id key" }) as T;
+    .populate({ path: "films.items.poster", select: "_id key" })
+    .populate({ path: "reviews.items.avatar", select: "_id key" })
+    .populate({ path: "reviews.items.poster", select: "_id key" }) as T;
+
+/** Attach Media.url when populate only returned `_id` + `key`. */
+const ensureMediaUrls = (node: unknown): unknown => {
+  if (Array.isArray(node)) return node.map(ensureMediaUrls);
+  if (!node || typeof node !== "object") return node;
+  const obj = node as Record<string, unknown>;
+  if (
+    typeof obj.key === "string" &&
+    obj.key.trim() &&
+    !(typeof obj.url === "string" && obj.url.trim())
+  ) {
+    const next: Record<string, unknown> = {
+      ...obj,
+      url: r2PublicUrl(obj.key),
+    };
+    for (const [k, v] of Object.entries(next)) {
+      if (k === "key" || k === "url") continue;
+      next[k] = ensureMediaUrls(v);
+    }
+    return next;
+  }
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    out[k] = ensureMediaUrls(v);
+  }
+  return out;
+};
+
+/** Keep Media virtual `url` (lean strips it). */
+const asLandingJson = (doc: InstanceType<typeof ProjectLanding> | null) => {
+  if (!doc) return null;
+  return ensureMediaUrls(doc.toObject({ virtuals: true }));
+};
 
 const emptySections = () =>
   Object.fromEntries(LANDING_SECTIONS.map((key) => [key, { visible: true }]));
@@ -84,17 +120,22 @@ const getByProject = async (projectId: string) => {
     throw new AppError(StatusCodes.NOT_FOUND, "Project not found");
   }
 
-  const landing = await withRelations(
-    ProjectLanding.findOne({ project: projectId }),
-  ).lean();
+  const landing = asLandingJson(
+    await withRelations(ProjectLanding.findOne({ project: projectId })),
+  );
 
   return { project, landing };
 };
 
 const getPublicByPath = async (path: string) => {
-  const landing = await withRelations(
-    ProjectLanding.findOne({ path: path.toLowerCase().trim(), isActive: true }),
-  ).lean();
+  const landing = asLandingJson(
+    await withRelations(
+      ProjectLanding.findOne({
+        path: path.toLowerCase().trim(),
+        isActive: true,
+      }),
+    ),
+  );
   if (!landing) {
     throw new AppError(StatusCodes.NOT_FOUND, "Landing page not found");
   }
