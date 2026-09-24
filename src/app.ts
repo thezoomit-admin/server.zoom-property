@@ -14,7 +14,7 @@ import { UploadRoutes } from "./app/routes/upload.route";
 import { corsOptions } from "./app/utils/cors";
 import sendResponse from "./app/utils/sendResponse";
 import config from "./app/config";
-
+// this app wos use
 const app: Application = express();
 app.set("trust proxy", 1);
 
