@@ -27,7 +27,10 @@ const storage = multer.diskStorage({
   },
 });
 
-export const upload = multer({ storage });
+export const upload = multer({
+  storage,
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100 MB cap
+});
 
 // -------- Profile image uploads --------
 // Kept under a "profile-image" prefix so they can be listed, cleaned up or
@@ -52,11 +55,11 @@ const ALLOWED_IMAGE_MIME = new Set([
  * back to a blank circle. Where the bytes end up is now `utils/storeUpload`'s
  * decision, and it puts them in R2.
  *
- * A 5 MB cap makes buffering safe; it is the same cap that was already here.
+ * A 25 MB cap makes buffering safe.
  */
 export const profileImageUpload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB cap
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB cap
   fileFilter: (_req, file, cb) => {
     if (ALLOWED_IMAGE_MIME.has(file.mimetype)) {
       cb(null, true);

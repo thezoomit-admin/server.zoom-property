@@ -44,8 +44,8 @@ app.use(morgan(config.NODE_ENV === "production" ? "combined" : "dev"));
 // hunting the wrong problem.
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Static folder for image access
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
