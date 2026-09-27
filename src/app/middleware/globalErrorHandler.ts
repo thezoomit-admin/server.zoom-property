@@ -42,6 +42,15 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
         statusCode = simplifiedError?.statusCode;
         message = simplifiedError?.message;
         errorSources = simplifiedError?.errorSources;
+    } else if (err?.type === 'entity.too.large' || err?.code === 'LIMIT_FILE_SIZE') {
+        statusCode = 413;
+        message = 'File is too large.';
+        errorSources = [
+            {
+                path: '',
+                message,
+            },
+        ];
     } else if (err instanceof AppError) {
         statusCode = err?.statusCode;
         message = err.message;
