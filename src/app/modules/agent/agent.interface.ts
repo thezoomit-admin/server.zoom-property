@@ -5,15 +5,16 @@ export interface IAgent extends Document {
   slug: string;
   name: string;
   nameBn?: string;
-  role: string;
+  role?: string;
   roleBn?: string;
-  phone: string;
+  phone?: string;
   patch: string[];
   deals: number;
   rating: number;
   respondsIn: number;
   image?: Types.ObjectId;
   languages: string[];
+  isActive: boolean;
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
