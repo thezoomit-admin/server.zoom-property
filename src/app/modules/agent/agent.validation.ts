@@ -5,15 +5,16 @@ export const createAgentZodSchema = z.object({
   body: z.object({
     name: z.string({ required_error: "Name is required" }),
     nameBn: z.string().optional(),
-    role: z.string({ required_error: "Role is required" }),
+    role: z.string().optional(),
     roleBn: z.string().optional(),
-    phone: z.string({ required_error: "Phone is required" }),
+    phone: z.string().optional(),
     patch: z.array(z.string()).optional(),
     deals: z.number().optional(),
     rating: z.number().optional(),
     respondsIn: z.number().optional(),
     image: objectId.optional().nullable(),
     languages: z.array(z.string()).optional(),
+    isActive: z.boolean().optional(),
   }),
 });
 
@@ -30,5 +31,6 @@ export const updateAgentZodSchema = z.object({
     respondsIn: z.number().optional(),
     image: objectId.optional().nullable(),
     languages: z.array(z.string()).optional(),
+    isActive: z.boolean().optional(),
   }),
 });
