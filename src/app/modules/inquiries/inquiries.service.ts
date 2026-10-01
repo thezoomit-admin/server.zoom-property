@@ -47,7 +47,7 @@ const createContactMessage = async (
         await NotificationService.emit({
           type: NotificationType.CONTACT_MESSAGE,
           title: `New contact message from ${payload.name}`,
-          message: `Subject: ${payload.subject}\n${truncate(payload.message)}`,
+          message: `Subject: ${payload.subject}\n${truncate(payload.message || "")}`,
           priority: NotificationPriority.HIGH,
           source: {
             module: "inquiries",
@@ -60,7 +60,7 @@ const createContactMessage = async (
             email: payload.email,
             phone: payload.phone,
             subject: payload.subject,
-            messagePreview: truncate(payload.message, 200),
+            messagePreview: truncate(payload.message || "", 200),
           },
           actionUrl: `/inquiries/contact-message`,
         });
@@ -374,6 +374,9 @@ const sendContactEmail = async (input: SendContactEmailInput) => {
   const contact = await ContactMessage.findById(input.contactId);
   if (!contact) {
     throw new Error("Contact message not found");
+  }
+  if (!contact.email) {
+    throw new Error("This enquiry has no email address — call the phone instead");
   }
 
   const html = buildBrandedContactHTML(

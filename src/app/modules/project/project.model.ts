@@ -11,6 +11,19 @@ const milestoneSchema = new Schema(
   { _id: false }
 );
 
+const featureSchema = new Schema(
+  {
+    eyebrow: { type: String, trim: true },
+    eyebrowBn: { type: String, trim: true },
+    title: { type: String, required: true, trim: true },
+    titleBn: { type: String, trim: true },
+    description: { type: String, trim: true },
+    descriptionBn: { type: String, trim: true },
+    image: { type: Schema.Types.ObjectId, ref: "Media" },
+  },
+  { _id: false }
+);
+
 const projectSchema = new Schema<IProject>(
   {
     name: { type: String, required: true, trim: true },
@@ -42,6 +55,11 @@ const projectSchema = new Schema<IProject>(
     description: { type: [String], default: [] },
     descriptionBn: { type: [String], default: [] },
 
+    specs: {
+      heroImage: { type: Schema.Types.ObjectId, ref: "Media" },
+      description: { type: String, default: "" },
+    },
+
     video: {
       title: { type: String, trim: true },
       titleBn: { type: String, trim: true },
@@ -55,6 +73,7 @@ const projectSchema = new Schema<IProject>(
     rajukPermitNo: { type: String, trim: true },
 
     milestones: { type: [milestoneSchema], default: [] },
+    features: { type: [featureSchema], default: [] },
     mapUrl: { type: String, trim: true },
 
     featured: { type: Boolean, default: false, index: true },

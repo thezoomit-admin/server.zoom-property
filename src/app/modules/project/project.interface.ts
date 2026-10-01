@@ -28,6 +28,20 @@ export interface IMilestone {
 }
 
 /**
+ * A feature of the project (e.g., Exterior, Drawing Room, Smart Home, Security).
+ * Rendered on the project details page in alternating layouts.
+ */
+export interface IProjectFeature {
+  eyebrow?: string;
+  eyebrowBn?: string;
+  title: string;
+  titleBn?: string;
+  description?: string;
+  descriptionBn?: string;
+  image?: Types.ObjectId;
+}
+
+/**
  * An under-construction development.
  *
  * The point of this record is transparency: the milestone breakdown, the date
@@ -65,6 +79,12 @@ export interface IProject extends Document {
   description: string[];
   descriptionBn: string[];
 
+  /** The "Specs" tab on the project page: its own hero and a rich-text write-up. */
+  specs?: {
+    heroImage?: Types.ObjectId;
+    description?: string;
+  };
+
   /**
    * The site walkthrough. Filmed on the visit that produced `lastInspected`, so
    * the footage and the percentages above it describe the same day.
@@ -83,6 +103,7 @@ export interface IProject extends Document {
   rajukPermitNo?: string;
 
   milestones: IMilestone[];
+  features: IProjectFeature[];
   mapUrl?: string;
 
   featured: boolean;

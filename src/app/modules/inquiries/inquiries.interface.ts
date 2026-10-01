@@ -1,9 +1,9 @@
 export interface IContactMessage {
   name: string;
-  email: string;
+  email?: string;
   phone: string;
   subject: string;
-  message: string;
+  message?: string;
   type?: string;
   enquiry?: string;
   area?: string;

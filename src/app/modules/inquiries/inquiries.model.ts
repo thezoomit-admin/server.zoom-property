@@ -5,10 +5,10 @@ import { IContactMessage, IQuotationRequest } from "./inquiries.interface";
 const ContactMessageSchema = new Schema<IContactMessage>(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true },
+    email: { type: String },
     phone: { type: String, required: true },
     subject: { type: String },
-    message: { type: String, required: true },
+    message: { type: String },
     type: { type: String, default: "General" },
     enquiry: { type: String },
     area: { type: String },
