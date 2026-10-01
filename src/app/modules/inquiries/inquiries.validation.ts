@@ -5,10 +5,11 @@ import { z } from "zod";
 export const createContactMessage = z.object({
   body: z.object({
     name: z.string().min(1, "Name is required"),
-    email: z.string().email("Invalid email format"),
+    // Lead forms mark email and message optional — accept them blank.
+    email: z.string().email("Invalid email format").optional().or(z.literal("")),
     phone: z.string({ required_error: "Phone is required" }),
     subject: z.string().optional(),
-    message: z.string({ required_error: "Message is required" }),
+    message: z.string().optional(),
     type: z.string().optional(),
     enquiry: z.string().optional(),
     area: z.string().optional(),
