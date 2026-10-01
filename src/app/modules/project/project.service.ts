@@ -53,6 +53,7 @@ const withRelations = <T>(q: T) =>
     .populate({ path: "subArea", select: "_id name nameBn slug" })
     .populate({ path: "coverImage", select: "_id key" })
     .populate({ path: "images", select: "_id key" })
+    .populate({ path: "features.image", select: "_id key" })
     .populate({ path: "agent", select: "_id name nameBn role roleBn phone image rating deals respondsIn languages" })
     .populate({ path: "video.poster", select: "_id key" }) as T;
 

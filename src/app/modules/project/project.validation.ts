@@ -13,6 +13,16 @@ const milestone = z.object({
   completed: z.boolean().optional(),
 });
 
+const feature = z.object({
+  eyebrow: z.string().optional(),
+  eyebrowBn: z.string().optional(),
+  title: z.string().min(1, "Feature title is required"),
+  titleBn: z.string().optional(),
+  description: z.string().optional(),
+  descriptionBn: z.string().optional(),
+  image: objectId.optional().nullable(),
+});
+
 const projectFields = {
   name: z.string().min(1, "Name is required"),
   nameBn: z.string().optional(),
@@ -54,6 +64,7 @@ const projectFields = {
   rajukPermitNo: z.string().optional(),
 
   milestones: z.array(milestone).optional(),
+  features: z.array(feature).optional(),
   mapUrl: optionalUrl,
 
   featured: z.boolean().optional(),
