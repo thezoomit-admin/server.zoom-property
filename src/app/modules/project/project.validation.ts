@@ -49,6 +49,13 @@ const projectFields = {
   description: z.array(z.string()).optional(),
   descriptionBn: z.array(z.string()).optional(),
 
+  specs: z
+    .object({
+      heroImage: objectId.optional().nullable(),
+      description: z.string().optional(),
+    })
+    .optional(),
+
   video: z
     .object({
       title: z.string().optional(),

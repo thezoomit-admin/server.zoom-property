@@ -79,6 +79,12 @@ export interface IProject extends Document {
   description: string[];
   descriptionBn: string[];
 
+  /** The "Specs" tab on the project page: its own hero and a rich-text write-up. */
+  specs?: {
+    heroImage?: Types.ObjectId;
+    description?: string;
+  };
+
   /**
    * The site walkthrough. Filmed on the visit that produced `lastInspected`, so
    * the footage and the percentages above it describe the same day.

@@ -55,6 +55,11 @@ const projectSchema = new Schema<IProject>(
     description: { type: [String], default: [] },
     descriptionBn: { type: [String], default: [] },
 
+    specs: {
+      heroImage: { type: Schema.Types.ObjectId, ref: "Media" },
+      description: { type: String, default: "" },
+    },
+
     video: {
       title: { type: String, trim: true },
       titleBn: { type: String, trim: true },
