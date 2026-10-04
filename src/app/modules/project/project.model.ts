@@ -24,6 +24,16 @@ const featureSchema = new Schema(
   { _id: false }
 );
 
+const projectDescriptionSchema = new Schema(
+  {
+    title: { type: String, required: true, trim: true },
+    titleBn: { type: String, trim: true },
+    description: { type: String, required: true },
+    descriptionBn: { type: String },
+  },
+  { _id: false }
+);
+
 const projectSchema = new Schema<IProject>(
   {
     name: { type: String, required: true, trim: true },
@@ -57,6 +67,7 @@ const projectSchema = new Schema<IProject>(
 
     specs: {
       heroImage: { type: Schema.Types.ObjectId, ref: "Media" },
+      descriptions: { type: [projectDescriptionSchema], default: [] },
       description: { type: String, default: "" },
     },
 
