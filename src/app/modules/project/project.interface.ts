@@ -41,6 +41,14 @@ export interface IProjectFeature {
   image?: Types.ObjectId;
 }
 
+/** A titled section in the project's Specs tab. */
+export interface IProjectDescription {
+  title: string;
+  titleBn?: string;
+  description: string;
+  descriptionBn?: string;
+}
+
 /**
  * An under-construction development.
  *
@@ -79,9 +87,11 @@ export interface IProject extends Document {
   description: string[];
   descriptionBn: string[];
 
-  /** The "Specs" tab on the project page: its own hero and a rich-text write-up. */
+  /** The "Specs" tab on the project page. */
   specs?: {
     heroImage?: Types.ObjectId;
+    descriptions?: IProjectDescription[];
+    /** Legacy rich-text write-up, kept for older project records. */
     description?: string;
   };
 

@@ -23,6 +23,13 @@ const feature = z.object({
   image: objectId.optional().nullable(),
 });
 
+const projectDescription = z.object({
+  title: z.string().min(1, "Description title is required"),
+  titleBn: z.string().optional(),
+  description: z.string().min(1, "Description is required"),
+  descriptionBn: z.string().optional(),
+});
+
 const projectFields = {
   name: z.string().min(1, "Name is required"),
   nameBn: z.string().optional(),
@@ -52,6 +59,7 @@ const projectFields = {
   specs: z
     .object({
       heroImage: objectId.optional().nullable(),
+      descriptions: z.array(projectDescription).optional(),
       description: z.string().optional(),
     })
     .optional(),
