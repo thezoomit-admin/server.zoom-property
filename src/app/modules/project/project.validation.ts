@@ -50,6 +50,7 @@ const projectFields = {
   sizeRange: z.string().optional(),
   startingPrice: z.number().min(0).optional().nullable(),
 
+  thumbnailImage: objectId.optional().nullable(),
   coverImage: objectId.optional().nullable(),
   images: z.array(objectId).optional(),
 

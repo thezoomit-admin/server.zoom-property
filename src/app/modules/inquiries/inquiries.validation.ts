@@ -8,6 +8,7 @@ export const createContactMessage = z.object({
     // Lead forms mark email and message optional — accept them blank.
     email: z.string().email("Invalid email format").optional().or(z.literal("")),
     phone: z.string({ required_error: "Phone is required" }),
+    location: z.string().optional(),
     subject: z.string().optional(),
     message: z.string().optional(),
     type: z.string().optional(),

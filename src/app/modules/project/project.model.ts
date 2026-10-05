@@ -59,6 +59,7 @@ const projectSchema = new Schema<IProject>(
     sizeRange: { type: String, trim: true },
     startingPrice: { type: Number, min: 0 },
 
+    thumbnailImage: { type: Schema.Types.ObjectId, ref: "Media" },
     coverImage: { type: Schema.Types.ObjectId, ref: "Media" },
     images: [{ type: Schema.Types.ObjectId, ref: "Media" }],
 

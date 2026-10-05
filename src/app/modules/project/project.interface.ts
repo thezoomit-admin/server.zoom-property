@@ -81,6 +81,7 @@ export interface IProject extends Document {
   sizeRange?: string;
   startingPrice?: number;
 
+  thumbnailImage?: Types.ObjectId;
   coverImage?: Types.ObjectId;
   images: Types.ObjectId[];
 
