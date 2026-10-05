@@ -7,6 +7,7 @@ const ContactMessageSchema = new Schema<IContactMessage>(
     name: { type: String, required: true },
     email: { type: String },
     phone: { type: String, required: true },
+    location: { type: String, trim: true },
     subject: { type: String },
     message: { type: String },
     type: { type: String, default: "General" },

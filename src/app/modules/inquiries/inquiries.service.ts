@@ -59,6 +59,7 @@ const createContactMessage = async (
             name: payload.name,
             email: payload.email,
             phone: payload.phone,
+            location: payload.location,
             subject: payload.subject,
             messagePreview: truncate(payload.message || "", 200),
           },
@@ -118,7 +119,9 @@ const createContactMessage = async (
           payload.source ||
           payload.subject ||
           null,
-        note: payload.message,
+        note: [payload.message, payload.location ? `Preferred location: ${payload.location}` : ""]
+          .filter(Boolean)
+          .join("\n"),
       });
     }
 
