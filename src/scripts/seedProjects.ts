@@ -40,7 +40,7 @@ type ProjectSeed = {
   nameBn: string;
   developer: string;
   area: string;
-  stage: "Planning" | "Processing" | "Completed";
+  stage: "Upcoming" | "Running" | "Completed";
   handover: string;
   units: number;
   unitsLeft: number;
@@ -67,7 +67,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "র‍্যাংগস মেরিডিয়ান টাওয়ার",
     developer: "Rangs Properties",
     area: "Gulshan (1 & 2)",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q2 2028",
     units: 54,
     unitsLeft: 21,
@@ -103,7 +103,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "শেলটেক লেকশোর বনানী",
     developer: "Sheltech Pvt Ltd",
     area: "Banani",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q4 2027",
     units: 36,
     unitsLeft: 11,
@@ -173,7 +173,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "কনকর্ড ধানমন্ডি লেকভিউ",
     developer: "Concord Real Estate",
     area: "Dhanmondi",
-    stage: "Planning",
+    stage: "Upcoming",
     handover: "Q1 2030",
     units: 42,
     unitsLeft: 42,
@@ -209,7 +209,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "অ্যাসিওর উত্তরা স্কাইলাইন",
     developer: "Assure Group",
     area: "Uttara (Sectors 1-14)",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q3 2027",
     units: 60,
     unitsLeft: 27,
@@ -245,7 +245,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "বসুন্ধরা পার্কলাইন রেসিডেন্স",
     developer: "Bashundhara Group",
     area: "Bashundhara Residential Area",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q1 2028",
     units: 72,
     unitsLeft: 40,
@@ -316,7 +316,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "নাভানা মহাখালী বিজনেস কোর্ট",
     developer: "Navana Real Estate",
     area: "Mohakhali DOHS",
-    stage: "Planning",
+    stage: "Upcoming",
     handover: "Q3 2029",
     units: 28,
     unitsLeft: 28,
@@ -352,7 +352,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "নিকুঞ্জ কোর্টইয়ার্ড টু",
     developer: "Anwar Landmark",
     area: "Nikunja 1 & 2",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q2 2027",
     units: 26,
     unitsLeft: 9,
@@ -387,7 +387,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "পূর্বাচল লেকফ্রন্ট ভিলাস",
     developer: "Sheltech Pvt Ltd",
     area: "Purbachal New Town",
-    stage: "Planning",
+    stage: "Upcoming",
     handover: "Q4 2029",
     units: 18,
     unitsLeft: 18,
