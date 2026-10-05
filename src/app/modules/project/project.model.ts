@@ -49,7 +49,7 @@ const projectSchema = new Schema<IProject>(
     stage: {
       type: String,
       enum: [...PROJECT_STAGES],
-      default: "Planning",
+      default: "Upcoming",
       index: true,
     },
     handover: { type: String, trim: true },

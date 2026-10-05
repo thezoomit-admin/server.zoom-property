@@ -9,7 +9,7 @@ import { Document, Types } from "mongoose";
  * The list lives here, not in the model, so the schema and the request
  * validator can share one vocabulary instead of drifting apart.
  */
-export const PROJECT_STAGES = ["Planning", "Processing", "Completed"] as const;
+export const PROJECT_STAGES = ["Upcoming", "Running", "Completed"] as const;
 
 export type ProjectStage = (typeof PROJECT_STAGES)[number];
 

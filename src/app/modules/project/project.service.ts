@@ -83,17 +83,22 @@ const getAllProjects = async (query: Record<string, unknown>) => {
   const baseFilter: Record<string, unknown> = { ...liveFilter };
   if (activeOnly === "true") baseFilter.isActive = true;
 
-  // Normalize stage filter (Completed, Planning, Processing)
+  // Normalize legacy and display labels to the canonical project stages.
   if (typeof restQuery.stage === "string") {
     const rawStage = restQuery.stage.trim().toLowerCase();
     if (rawStage === "all" || !rawStage) {
       delete restQuery.stage;
     } else if (rawStage === "completed" || rawStage === "done" || rawStage === "complete") {
       restQuery.stage = "Completed";
-    } else if (rawStage === "planning") {
-      restQuery.stage = "Planning";
-    } else if (rawStage === "processing" || rawStage === "under construction" || rawStage === "in progress") {
-      restQuery.stage = "Processing";
+    } else if (rawStage === "upcoming" || rawStage === "planning") {
+      restQuery.stage = "Upcoming";
+    } else if (
+      rawStage === "running" ||
+      rawStage === "processing" ||
+      rawStage === "under construction" ||
+      rawStage === "in progress"
+    ) {
+      restQuery.stage = "Running";
     }
   }
 

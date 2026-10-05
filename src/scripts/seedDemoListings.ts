@@ -28,7 +28,7 @@ type ProjectSeed = {
   nameBn: string;
   developer: string;
   area: string;
-  stage: "Planning" | "Processing" | "Completed";
+  stage: "Upcoming" | "Running" | "Completed";
   handover: string;
   units: number;
   unitsLeft: number;
@@ -47,7 +47,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "নাভানা প্ল্যাটিনাম রেসিডেন্স",
     developer: "Navana Real Estate",
     area: "Gulshan (1 & 2)",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q4 2027",
     units: 48,
     unitsLeft: 19,
@@ -70,7 +70,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "অ্যাসিওরেন্স লেক টেরেস",
     developer: "Assurance Developments",
     area: "Banani",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q2 2027",
     units: 36,
     unitsLeft: 11,
@@ -115,7 +115,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "ধানমন্ডি হেরিটেজ পার্ক",
     developer: "Building Technology & Ideas",
     area: "Dhanmondi",
-    stage: "Planning",
+    stage: "Upcoming",
     handover: "Q1 2029",
     units: 60,
     unitsLeft: 60,
@@ -138,7 +138,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "উত্তরা গ্রিন মেডোজ",
     developer: "Rangs Properties",
     area: "Uttara (Sectors 1-14)",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q3 2028",
     units: 84,
     unitsLeft: 51,
@@ -160,7 +160,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "বসুন্ধরা রিভারফ্রন্ট",
     developer: "Bashundhara Group",
     area: "Bashundhara Residential Area",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q4 2028",
     units: 120,
     unitsLeft: 88,
@@ -205,7 +205,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "মহাখালী বিজনেস বে",
     developer: "Amin Mohammad Foundation",
     area: "Mohakhali DOHS",
-    stage: "Planning",
+    stage: "Upcoming",
     handover: "Q2 2029",
     units: 40,
     unitsLeft: 40,
@@ -228,7 +228,7 @@ const PROJECTS: ProjectSeed[] = [
     nameBn: "নিকুঞ্জ কোর্টইয়ার্ড হোমস",
     developer: "Anwar Landmark",
     area: "Nikunja 1 & 2",
-    stage: "Processing",
+    stage: "Running",
     handover: "Q1 2028",
     units: 28,
     unitsLeft: 14,

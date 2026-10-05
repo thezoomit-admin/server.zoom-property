@@ -4,25 +4,31 @@ import config from "../app/config";
 import { Project } from "../app/modules/project/project.model";
 
 /**
- * Moves existing projects onto the three-stage vocabulary.
+ * Moves existing projects onto the Upcoming / Running / Completed vocabulary.
  *
- * The stages used to be Piling / Structure / Finishing / Handover ready. Rows
- * written before the change still carry those words, and nothing rewrites them
- * on read — so until this runs, an old project shows a stage the form cannot
- * offer, refuses to save (the schema enum rejects it), and is invisible to the
- * dashboard's completed count.
+ * Rows written before the change may still carry Planning / Processing or
+ * older construction labels. Normalize them so the new enum can read and save
+ * every project and the website's status filters return consistent results.
  *
- * The three construction words all mean the same thing under the new list:
- * work is underway. Only "Handover ready" carries its own meaning across.
+ * Planning becomes Upcoming, and all construction-stage labels become
+ * Running. Completed remains unchanged.
  *
  * Safe to run more than once — a row already on a new stage matches nothing.
  *
  *   npm run migrate:project-stages
  */
 const STAGE_MAP: Record<string, string> = {
-  Piling: "Processing",
-  Structure: "Processing",
-  Finishing: "Processing",
+  Planning: "Upcoming",
+  planning: "Upcoming",
+  Processing: "Running",
+  processing: "Running",
+  "Under Construction": "Running",
+  "under construction": "Running",
+  "In Progress": "Running",
+  "in progress": "Running",
+  Piling: "Running",
+  Structure: "Running",
+  Finishing: "Running",
   "Handover ready": "Completed",
 };
 
@@ -46,11 +52,11 @@ const run = async () => {
   // Anything else — a blank stage, or a word from some older list — starts at
   // the beginning rather than being guessed at.
   const stranded = await Project.updateMany(
-    { stage: { $nin: ["Planning", "Processing", "Completed"] } },
-    { $set: { stage: "Planning" } }
+    { stage: { $nin: ["Upcoming", "Running", "Completed"] } },
+    { $set: { stage: "Upcoming" } }
   );
   if (stranded.modifiedCount) {
-    console.log(`   unrecognised → Planning: ${stranded.modifiedCount}`);
+    console.log(`   unrecognised → Upcoming: ${stranded.modifiedCount}`);
     moved += stranded.modifiedCount;
   }
 
