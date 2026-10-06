@@ -10,6 +10,8 @@ export type ZoomBondLeadPayload = {
   note?: string | null;
   /** Form's Address/City → Bond persona `address`. */
   address?: string | null;
+  /** Form's Occupation (free text) → Bond persona profile `occupation`. */
+  occupation?: string | null;
 };
 
 /**
@@ -19,7 +21,7 @@ export type ZoomBondLeadPayload = {
  * Only called when contact payload has `createLead: true`
  * (home hero, landing enquire, site CTA) — not for contact-page inquiries.
  *
- * Body (exact): { fullName, phone, email?, project?, note?, address? }
+ * Body (exact): { fullName, phone, email?, project?, note?, address?, occupation? }
  *
  * Fire-and-forget — never throws into the caller.
  */
@@ -50,6 +52,7 @@ export async function forwardLeadToZoomBond(
     project?: string;
     note?: string;
     address?: string;
+    occupation?: string;
   } = { fullName, phone };
 
   const email = String(lead.email || "").trim();
@@ -63,6 +66,9 @@ export async function forwardLeadToZoomBond(
 
   const address = String(lead.address || "").trim();
   if (address) body.address = address;
+
+  const occupation = String(lead.occupation || "").trim();
+  if (occupation) body.occupation = occupation;
 
   const url = `${base}/api/public/leads`;
   const controller = new AbortController();

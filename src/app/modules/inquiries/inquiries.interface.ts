@@ -3,6 +3,7 @@ export interface IContactMessage {
   email?: string;
   phone: string;
   location?: string;
+  occupation?: string;
   subject: string;
   message?: string;
   type?: string;
