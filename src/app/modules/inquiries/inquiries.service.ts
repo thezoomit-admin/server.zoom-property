@@ -60,6 +60,11 @@ const createContactMessage = async (
             email: payload.email,
             phone: payload.phone,
             location: payload.location,
+            area: payload.area,
+            subArea: payload.subArea,
+            budget: payload.budget,
+            enquiry: payload.enquiry,
+            source: payload.source,
             subject: payload.subject,
             messagePreview: truncate(payload.message || "", 200),
           },
@@ -83,6 +88,12 @@ const createContactMessage = async (
             phone: payload.phone,
             subject: payload.subject,
             message: payload.message,
+            area: payload.area,
+            subArea: payload.subArea,
+            location: payload.location,
+            budget: payload.budget,
+            enquiry: payload.enquiry,
+            source: payload.source,
             timestamp: new Date().toLocaleString("en-US", {
               timeZone: "Asia/Dhaka",
               dateStyle: "full",
@@ -119,7 +130,19 @@ const createContactMessage = async (
           payload.source ||
           payload.subject ||
           null,
-        note: [payload.message, payload.location ? `Preferred location: ${payload.location}` : ""]
+        // Bond's public API takes only { fullName, phone, email, project,
+        // note } — everything else the form sent rides along in the note,
+        // one labelled line each, so nothing is lost on the CRM side.
+        note: [
+          payload.message,
+          payload.area ? `Area: ${payload.area}` : "",
+          payload.subArea ? `Sub-area: ${payload.subArea}` : "",
+          payload.location ? `Address/City: ${payload.location}` : "",
+          payload.budget ? `Budget: ${payload.budget}` : "",
+          payload.enquiry ? `Enquiry: ${payload.enquiry}` : "",
+          payload.subject ? `Subject: ${payload.subject}` : "",
+          payload.source ? `Source: ${payload.source}` : "",
+        ]
           .filter(Boolean)
           .join("\n"),
       });
