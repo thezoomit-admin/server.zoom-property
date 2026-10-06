@@ -124,6 +124,7 @@ const createContactMessage = async (
         name: payload.name,
         phone: payload.phone,
         email: payload.email,
+        address: payload.location,
         project:
           place ||
           payload.budget ||
