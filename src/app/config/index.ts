@@ -65,6 +65,17 @@ export default {
   frontend_url: process.env.FRONTEND_URL,
   revalidate_secret: process.env.REVALIDATE_SECRET,
   /**
+   * Same value as `SECRET` in the site's src/server/base-api/visitor.ts. Lets
+   * the site's server forward the visitor's IP (`X-Visitor-IP`) so rate limits
+   * count visitors, not the site host.
+   */
+  internal_api_secret:
+    "fbe014a9fa499c214efbd4502bf56c9e63bb716804377d807c6d42c6b7dd1541",
+  /** Same value as `website_lead_secret` in Zoom Bond's config — exempts our
+   * lead forwards from Bond's per-IP public-lead limit (we limit per visitor). */
+  zoom_bond_lead_secret:
+    "623ff748178d0b46b7dcd1ff89f01c6c6550e121c6a1a797b9324291b81678eb",
+  /**
    * Zoom Bond CRM base URL — home / landing / site-CTA leads POST to
    * `{url}/api/public/leads` (contact-page inquiries do not). Dev: http://localhost:5002
    * Prod: https://serverzoombond.zoomx.digital
