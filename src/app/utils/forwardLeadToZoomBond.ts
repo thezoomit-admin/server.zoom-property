@@ -74,6 +74,11 @@ export async function forwardLeadToZoomBond(
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        // Every visitor's lead leaves from this one server; the secret lets
+        // Bond skip its per-IP limit (we already limit each visitor).
+        ...(config.zoom_bond_lead_secret
+          ? { "X-Internal-Secret": config.zoom_bond_lead_secret }
+          : {}),
       },
       body: JSON.stringify(body),
       signal: controller.signal,
