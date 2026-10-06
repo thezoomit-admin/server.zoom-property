@@ -8,6 +8,7 @@ const ContactMessageSchema = new Schema<IContactMessage>(
     email: { type: String },
     phone: { type: String, required: true },
     location: { type: String, trim: true },
+    occupation: { type: String, trim: true },
     subject: { type: String },
     message: { type: String },
     type: { type: String, default: "General" },

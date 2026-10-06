@@ -60,6 +60,7 @@ const createContactMessage = async (
             email: payload.email,
             phone: payload.phone,
             location: payload.location,
+            occupation: payload.occupation,
             area: payload.area,
             subArea: payload.subArea,
             budget: payload.budget,
@@ -91,6 +92,7 @@ const createContactMessage = async (
             area: payload.area,
             subArea: payload.subArea,
             location: payload.location,
+            occupation: payload.occupation,
             budget: payload.budget,
             enquiry: payload.enquiry,
             source: payload.source,
@@ -125,6 +127,7 @@ const createContactMessage = async (
         phone: payload.phone,
         email: payload.email,
         address: payload.location,
+        occupation: payload.occupation,
         project:
           place ||
           payload.budget ||
@@ -139,6 +142,7 @@ const createContactMessage = async (
           payload.area ? `Area: ${payload.area}` : "",
           payload.subArea ? `Sub-area: ${payload.subArea}` : "",
           payload.location ? `Address/City: ${payload.location}` : "",
+          payload.occupation ? `Occupation: ${payload.occupation}` : "",
           payload.budget ? `Budget: ${payload.budget}` : "",
           payload.enquiry ? `Enquiry: ${payload.enquiry}` : "",
           payload.subject ? `Subject: ${payload.subject}` : "",
